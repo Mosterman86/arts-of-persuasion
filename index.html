@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Arts of Persuasion Interactive — The Wolfsonian–FIU</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg:    #000;
+      --fg:    #fff;
+      --muted: #d0d0d0;
+      --dim:   #777;
+      --rule:  rgba(255,255,255,0.12);
+      --sans:  'Plus Jakarta Sans', sans-serif;
+      --mono:  'DM Mono', monospace;
+      --gap:   clamp(1.5rem, 5vw, 4rem);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: clamp(0.9rem, 1.4vw, 1rem);
+      line-height: 1.75;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0.8rem var(--gap);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-name {
+      font-family: var(--mono); font-size: 0.62rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg); text-decoration: none; white-space: nowrap;
+    }
+    .header-name:hover { color: var(--muted); }
+    .header-badge {
+      font-family: var(--mono); font-size: 0.56rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--dim); border: 1px solid var(--rule);
+      padding: 0.2em 0.6em; border-radius: 2px;
+    }
+
+    /* ── Hero (landing) ── */
+    .hero {
+      max-width: 1200px; margin: 0 auto;
+      padding: clamp(3rem,7vh,6rem) var(--gap) clamp(2rem,4vh,3.5rem);
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 0.62rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 28px; height: 1px; background: var(--muted);
+    }
+    .hero-title {
+      font-size: clamp(2.2rem,5.5vw,4.4rem); font-weight: 200;
+      letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 1.5rem;
+    }
+    .hero-sub {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.8;
+      max-width: 680px;
+    }
+
+    /* ── Body wrap ── */
+    .body-wrap {
+      max-width: 1200px; margin: 0 auto; padding: 0 var(--gap);
+    }
+
+    /* ── Landing page ── */
+    .landing-page { display: block; }
+    .landing-page.hidden { display: none; }
+
+    /* ── Thumbnail grid ── */
+    .thumbnail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: clamp(2rem,4vh,3rem) 0;
+    }
+    .thumbnail-card {
+      border: 1px solid var(--rule);
+      background: rgba(255,255,255,0.02);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      text-align: left;
+    }
+    .thumbnail-card:hover {
+      border-color: var(--muted);
+      background: rgba(255,255,255,0.04);
+    }
+    .thumbnail-card img {
+      width: 100%; height: auto;
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid var(--rule);
+    }
+    .thumbnail-title {
+      font-size: 1.05rem; font-weight: 400;
+      color: var(--fg); margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .thumbnail-description {
+      font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+    }
+    .thumbnail-cta {
+      display: inline-block; margin-top: 1rem;
+      font-family: var(--mono); font-size: 0.52rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--dim); border-bottom: 1px solid var(--rule);
+      padding-bottom: 0.1em;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .thumbnail-card:hover .thumbnail-cta { color: var(--muted); border-color: var(--muted); }
+
+    /* ── Gallery view ── */
+    .gallery-view { display: none; }
+    .gallery-view.active { display: block; }
+
+    /* ── Gallery hero ── */
+    .gallery-hero {
+      max-width: 1200px; margin: 0 auto;
+      padding: clamp(2.5rem,5vh,4rem) var(--gap) clamp(1.5rem,3vh,2.5rem);
+      border-bottom: 1px solid var(--rule);
+    }
+    .gallery-eyebrow {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.75rem;
+    }
+    .gallery-poster-title {
+      font-size: clamp(1.6rem,4vw,3rem); font-weight: 200;
+      letter-spacing: -0.02em; line-height: 1.1;
+    }
+
+    /* ── Instructions box ── */
+    .instructions-wrap {
+      padding: clamp(1.5rem,3vh,2rem) 0;
+      border-bottom: 1px solid var(--rule);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem;
+    }
+    .instructions-label {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.6rem;
+    }
+    .instructions-body {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.8;
+    }
+    .instructions-body strong { color: var(--fg); font-weight: 400; }
+
+    /* ── Slide / image area ── */
+    .gallery-section {
+      padding: clamp(2rem,4vh,3rem) 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .image-slide { display: none; }
+    .image-slide.active { display: block; }
+
+    .image-frame {
+      display: flex; justify-content: center; align-items: flex-start;
+      position: relative;
+    }
+    .image-container {
+      position: relative; display: inline-block;
+    }
+    .image-container img {
+      display: block;
+      max-width: 100%; height: auto;
+      border: 1px solid var(--rule);
+    }
+
+    /* ── Markers ── */
+    .marker {
+      position: absolute;
+      width: 18px; height: 18px;
+      background: #1a6fff;
+      border-radius: 50%;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      border: 2px solid rgba(255,255,255,0.85);
+      box-shadow: 0 0 0 2px rgba(26,111,255,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      z-index: 10;
+    }
+    .marker:hover {
+      transform: translate(-50%, -50%) scale(1.25);
+      box-shadow: 0 0 0 4px rgba(26,111,255,0.25);
+    }
+
+    /* ── Tooltip ── */
+    .tooltip {
+      position: absolute;
+      background: rgba(10,10,10,0.95);
+      border: 1px solid var(--rule);
+      color: var(--muted);
+      padding: 1rem 1.1rem;
+      border-radius: 3px;
+      min-width: 220px; max-width: 300px;
+      white-space: normal;
+      transform: translate(-10%, -110%);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: 100;
+      text-align: left;
+      font-size: 0.78rem;
+      line-height: 1.65;
+      font-family: var(--sans);
+    }
+    .tooltip strong {
+      display: block;
+      font-family: var(--mono); font-size: 0.52rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg); margin-bottom: 0.4rem; font-weight: 400;
+    }
+    .marker:hover .tooltip { opacity: 1; }
+
+    /* ── Caption ── */
+    .caption-row {
+      margin-top: 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .caption-btn {
+      font-family: var(--mono); font-size: 0.52rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--rule); padding: 0.45em 1.1em;
+      border-radius: 2px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .caption-btn:hover { color: var(--fg); border-color: var(--muted); }
+    .caption-display {
+      display: none;
+      font-size: 0.82rem; color: var(--muted); line-height: 1.8;
+      border-top: 1px solid var(--rule); padding-top: 1rem; margin-top: 1rem;
+      width: 100%;
+    }
+    .caption-display.visible { display: block; }
+    .caption-display strong { color: var(--fg); font-weight: 400; }
+
+    /* ── Back / nav button ── */
+    .back-btn {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--rule); padding: 0.55em 1.4em;
+      border-radius: 2px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      margin-top: clamp(2rem,4vh,3rem);
+      display: inline-block;
+    }
+    .back-btn:hover { color: var(--fg); border-color: var(--muted); }
+
+    /* ── Footer ── */
+    .site-footer {
+      max-width: 1200px; margin: 0 auto;
+      padding: clamp(2rem,4vh,3rem) var(--gap);
+      border-top: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .ft-copy {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .instructions-wrap { grid-template-columns: 1fr; gap: 1.5rem; }
+      .tooltip { min-width: 180px; max-width: 230px; font-size: 0.72rem; }
+      .marker { width: 22px; height: 22px; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .marker { width: 26px; height: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="header-name" href="https://www.wolfsonian.org" target="_blank">The Wolfsonian&ndash;FIU</a>
+    <span class="header-badge">Arts of Persuasion</span>
+  </div>
+</header>
+
+<!-- ══════════════ LANDING PAGE ══════════════ -->
+<div class="landing-page" id="landingPage">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Wolfsonian Digital Labs &mdash; Hotspot Interactive</div>
+    <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--dim);margin-bottom:2rem;padding-left:calc(28px + 0.75rem);">Proof of Concept</div>
+    <h1 class="hero-title">Arts of Persuasion</h1>
+    <p class="hero-sub">Select a poster below to explore the persuasion techniques used in World War II propaganda. Touch the blue markers on each image to reveal information about different methods of persuasion at work.</p>
+  </div>
+
+  <div class="body-wrap">
+    <div class="thumbnail-grid">
+
+      <div class="thumbnail-card" onclick="viewPoster(0)">
+        <img src="united_we_win.jpg" alt="United We Win Thumbnail">
+        <div class="thumbnail-title">United We Win</div>
+        <div class="thumbnail-description">Explore techniques like Transfer, Bandwagon, and Plain Folks appeal in this WWII poster.</div>
+        <span class="thumbnail-cta">Explore poster &rarr;</span>
+      </div>
+
+      <div class="thumbnail-card" onclick="viewPoster(1)">
+        <img src="work_to_keep_free.jpg" alt="Work to Keep Free Thumbnail">
+        <div class="thumbnail-title">Work to Keep Free</div>
+        <div class="thumbnail-description">Discover how Transfer and Patriotic Appeal were used to motivate wartime production.</div>
+        <span class="thumbnail-cta">Explore poster &rarr;</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<!-- ── End Landing ── -->
+
+<!-- ══════════════ GALLERY VIEW ══════════════ -->
+<div class="gallery-view" id="galleryView">
+
+  <div class="gallery-hero body-wrap" style="max-width:100%;padding-left:var(--gap);padding-right:var(--gap);">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div class="gallery-eyebrow">Arts of Persuasion &mdash; Interactive</div>
+      <h2 class="gallery-poster-title" id="galleryTitle">&nbsp;</h2>
+    </div>
+  </div>
+
+  <div class="body-wrap">
+
+    <div class="instructions-wrap">
+      <div>
+        <div class="instructions-label">How to explore</div>
+        <div class="instructions-body">
+          Touch or hover the <strong>blue circular markers</strong> on the image to reveal information about the persuasion techniques used in this historical poster.
+        </div>
+      </div>
+      <div>
+        <div class="instructions-label">Something to consider</div>
+        <div class="instructions-body">
+          When you leave the museum today, think about how other forms of media and communication you encounter attempt to persuade you.
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-section">
+      <!-- Slide 0 — United We Win -->
+      <div class="image-slide" id="slide-0">
+        <div class="image-frame">
+          <div class="image-container">
+            <img src="united_we_win.png" alt="United We Win Poster">
+
+            <div class="marker" style="top:20%;left:40%;">
+              <div class="tooltip">
+                <strong>Transfer or Association</strong>
+                Linking a person, product, or idea with something that already has positive or negative connotations in the audience's mind. The goal is to transfer those existing feelings and associations to the new target.
+              </div>
+            </div>
+
+            <div class="marker" style="top:90%;left:40%;">
+              <div class="tooltip">
+                <strong>Bandwagon</strong>
+                A method that encourages people to adopt a belief or behavior because "everyone else is doing it." It exploits the human tendency to conform and follow the crowd.
+              </div>
+            </div>
+
+            <div class="marker" style="top:40%;left:60%;">
+              <div class="tooltip">
+                <strong>Identification / Plain Folks</strong>
+                Used to convince the audience that ideas are good because they come from common, everyday people. Note the use of what would have been considered a 'common' citizen at the time, though this representation would not be considered inclusive or representative of many groups today.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="caption-row">
+          <button class="caption-btn" onclick="toggleCaption(0)">&#8595; Caption</button>
+          <div class="caption-display" id="caption-0">
+            <strong>United We Win</strong>, 1942<br>
+            Photographer: Howard Liberman<br>
+            Publisher: War Manpower Commission<br>
+            Printer: U.S. Government Printing Office, Washington, D.C.
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 1 — Work to Keep Free -->
+      <div class="image-slide" id="slide-1">
+        <div class="image-frame">
+          <div class="image-container">
+            <img src="work_to_be_free.png" alt="Work to Keep Free Poster">
+
+            <div class="marker" style="top:30%;left:60%;">
+              <div class="tooltip">
+                <strong>Transfer or Association</strong>
+                Linking a person, product, or idea with something that already has positive or negative connotations in the audience's mind. The goal is to transfer those existing feelings and associations to the new target.
+              </div>
+            </div>
+
+            <div class="marker" style="top:70%;left:25%;">
+              <div class="tooltip">
+                <strong>Patriotic Appeal</strong>
+                Invokes love of country and national pride to encourage support for a cause or action.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="caption-row">
+          <button class="caption-btn" onclick="toggleCaption(1)">&#8595; Caption</button>
+          <div class="caption-display" id="caption-1">
+            <strong>Work to Keep Free!</strong>, 1943<br>
+            Creator: Unknown, Designer<br>
+            Publisher: War Production Board, Washington, DC<br>
+            Printer: US Government Printing Office, Washington, DC
+          </div>
+        </div>
+      </div>
+    </div><!-- /.gallery-section -->
+
+    <button class="back-btn" onclick="backToLanding()">&larr; Back to Gallery</button>
+
+  </div><!-- /.body-wrap -->
+
+</div>
+<!-- ── End Gallery ── -->
+
+<!-- ── Footer ── -->
+<footer class="site-footer">
+  <span class="ft-copy">The Wolfsonian&ndash;Florida International University</span>
+</footer>
+
+<script>
+  /* ── Poster titles for gallery header ── */
+  var posterTitles = ['United We Win', 'Work to Keep Free'];
+
+  function viewPoster(slideIndex) {
+    document.getElementById('landingPage').classList.add('hidden');
+    document.getElementById('galleryView').classList.add('active');
+    document.getElementById('galleryTitle').textContent = posterTitles[slideIndex];
+
+    document.querySelectorAll('.image-slide').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('slide-' + slideIndex).classList.add('active');
+    document.querySelectorAll('.caption-display').forEach(function(c) { c.classList.remove('visible'); });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToLanding() {
+    document.getElementById('galleryView').classList.remove('active');
+    document.getElementById('landingPage').classList.remove('hidden');
+    document.querySelectorAll('.image-slide').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.caption-display').forEach(function(c) { c.classList.remove('visible'); });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleCaption(slideIndex) {
+    var cap = document.getElementById('caption-' + slideIndex);
+    var btn = cap.closest('.caption-row').querySelector('.caption-btn');
+    cap.classList.toggle('visible');
+    btn.textContent = cap.classList.contains('visible') ? '\u2191 Caption' : '\u2193 Caption';
+  }
+
+  /* ── Keyboard nav ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { backToLanding(); }
+  });
+
+  /* ── Touch support for markers ── */
+  var touchTimeout;
+  document.querySelectorAll('.marker').forEach(function(marker) {
+    marker.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      var tooltip = this.querySelector('.tooltip');
+      var isVisible = tooltip.style.opacity === '1';
+
+      document.querySelectorAll('.tooltip').forEach(function(t) { t.style.opacity = '0'; });
+
+      if (!isVisible) {
+        tooltip.style.opacity = '1';
+        clearTimeout(touchTimeout);
+        touchTimeout = setTimeout(function() { tooltip.style.opacity = '0'; }, 5000);
+      }
+    });
+  });
+
+  /* ── Prevent double-tap zoom ── */
+  var lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e) {
+    var now = Date.now();
+    if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+    lastTouchEnd = now;
+  }, false);
+</script>
+</body>
+</html>
